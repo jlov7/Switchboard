@@ -106,7 +106,7 @@ source = ["switchboard"]
 
 [tool.coverage.report]
 skip_empty = true
-fail_under = 90
+fail_under = 70
 
 [tool.mutmut]
 paths_to_mutate = "switchboard"

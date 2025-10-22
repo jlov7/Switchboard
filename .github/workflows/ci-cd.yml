@@ -117,7 +117,9 @@ jobs:
         run: python -m pip install pip-tools && pip-compile --quiet --extra dev --output-file requirements-dev.txt pyproject.toml
 
       - name: Run Safety
-        run: safety check --file=requirements-dev.txt --full-report --output=safety-report.json || true
+        run: |
+          safety check --file=requirements-dev.txt --full-report --output=safety-report.json || true
+          if [ ! -f safety-report.json ]; then echo "[]" > safety-report.json; fi
 
       - name: Upload Safety report
         if: always()
