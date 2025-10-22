@@ -1,0 +1,197 @@
+name: Docker Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to build (e.g., v1.0.0)'
+        required: true
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: infra/docker/Dockerfile.api
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}-api
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+      - name: Build and push MCP Server image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: infra/docker/Dockerfile.mcp
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}-mcp
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+      - name: Build and push Approvals UI image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: infra/docker/Dockerfile.approvals_ui
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}-approvals-ui
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+      - name: Build and push Demo Agent image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: infra/docker/Dockerfile.demo_agent
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}-demo-agent
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+  generate-docker-compose:
+    name: Generate Docker Compose for Release
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.event_name == 'release'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate docker-compose.release.yml
+        run: |
+          cat > docker-compose.release.yml << 'EOF'
+          version: '3.8'
+
+          services:
+            switchboard-api:
+              image: ghcr.io/jlov7/switchboard:${{ github.event.release.tag_name }}-api
+              ports:
+                - "8000:8000"
+              environment:
+                - SWITCHBOARD_LOG_LEVEL=INFO
+                - SWITCHBOARD_APPROVAL_BACKEND=persistent
+                - SWITCHBOARD_DATABASE_URL=sqlite+aiosqlite:///data/switchboard.db
+              volumes:
+                - switchboard_data:/data
+              depends_on:
+                - switchboard-db
+              restart: unless-stopped
+
+            switchboard-mcp:
+              image: ghcr.io/jlov7/switchboard:${{ github.event.release.tag_name }}-mcp
+              ports:
+                - "8001:8001"
+              environment:
+                - SWITCHBOARD_LOG_LEVEL=INFO
+                - SWITCHBOARD_MCP_PORT=8001
+              restart: unless-stopped
+
+            switchboard-approvals-ui:
+              image: ghcr.io/jlov7/switchboard:${{ github.event.release.tag_name }}-approvals-ui
+              ports:
+                - "8501:8501"
+              environment:
+                - SWITCHBOARD_LOG_LEVEL=INFO
+                - STREAMLIT_SERVER_PORT=8501
+                - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+              restart: unless-stopped
+
+            switchboard-demo-agent:
+              image: ghcr.io/jlov7/switchboard:${{ github.event.release.tag_name }}-demo-agent
+              ports:
+                - "8002:8002"
+              environment:
+                - SWITCHBOARD_LOG_LEVEL=INFO
+              restart: unless-stopped
+
+            switchboard-db:
+              image: sqlite:3.45
+              volumes:
+                - switchboard_data:/data
+              command: ["echo", "Database container for volume mounting"]
+
+          volumes:
+            switchboard_data:
+              driver: local
+
+          networks:
+            default:
+              name: switchboard-network
+          EOF
+
+      - name: Upload Docker Compose to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./docker-compose.release.yml
+          asset_name: docker-compose.release.yml
+          asset_content_type: text/yaml
+
+  update-readme-docker:
+    name: Update README with Docker Instructions
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update README with Docker badges and instructions
+        run: |
+          # This would update the README with Docker instructions
+          # For now, we'll create a note that Docker images are available
+          echo "Docker images published for release ${{ github.event.release.tag_name }}"

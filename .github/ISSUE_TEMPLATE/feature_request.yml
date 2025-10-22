@@ -1,0 +1,106 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+assignees: ["jlov7"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request
+
+        Thank you for suggesting a new feature! Please describe your idea in detail to help us understand your needs.
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: |
+        Describe the problem you're trying to solve or the need you're addressing.
+        What challenge are you facing that this feature would help with?
+      placeholder: |
+        Currently, users have to [describe current workaround or limitation].
+        This makes it difficult to [describe the impact].
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: |
+        Describe your proposed solution in detail.
+        What should the new feature do? How should it work?
+      placeholder: |
+        I propose adding [feature name] that would [describe functionality].
+
+        The feature would work by [explain how it would work].
+
+        This would allow users to [describe benefits].
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: |
+        Describe specific scenarios where this feature would be useful.
+        Who would benefit from this feature?
+      placeholder: |
+        1. **Scenario 1:** [Describe a specific use case]
+        2. **Scenario 2:** [Describe another use case]
+        3. **Target Users:** [Who would use this feature]
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: Alternatives Considered
+      description: |
+        Have you considered any alternative solutions?
+        What other approaches could solve this problem?
+      placeholder: |
+        I considered [alternative 1] but it wouldn't work because [reason].
+
+        I also looked at [alternative 2] but [reason it wouldn't work].
+
+  - type: textarea
+    id: implementation-suggestions
+    attributes:
+      label: Implementation Suggestions (Optional)
+      description: |
+        If you have thoughts on how this could be implemented,
+        or references to similar features in other projects, please share them.
+      placeholder: |
+        This could be implemented by [technical approach].
+
+        Similar features exist in [other projects/repositories].
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: |
+        Add any other context, mockups, or references that might help.
+        Links to related issues or discussions are welcome.
+      placeholder: |
+        Related issues: #[issue number]
+        Related discussions: [link to discussion]
+        Mockups: [link to mockups if available]
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Please check all that apply to this feature request.
+      options:
+        - label: I have searched existing issues and discussions for similar requests
+          required: true
+        - label: I have provided a clear problem statement and use cases
+          required: true
+        - label: I have considered alternative solutions
+          required: true
+        - label: This feature aligns with the project's goals and scope
+          required: true
