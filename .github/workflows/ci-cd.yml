@@ -61,7 +61,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.11", "3.12"]
     env:
       IS_COVERAGE_RUN: ${{ matrix.python-version == '3.11' }}
     steps:
@@ -79,29 +79,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
-      - name: Run unit tests
-        run: pytest tests/unit -v
+      - name: Run tests
+        if: matrix.python-version != '3.11'
+        run: pytest -v tests
 
-      - name: Run integration tests
-        run: pytest tests/integration -v
-
-      - name: Run property tests
-        run: pytest tests/property -v
-
-      - name: Run tox (only py311)
+      - name: Run tests with coverage
         if: matrix.python-version == '3.11'
-        run: tox -e py311
-
-      - name: Coverage (only py311)
-        if: matrix.python-version == '3.11'
-        run: pytest --cov=switchboard --cov-report=xml --cov-report=term-missing
-
-      - name: Upload coverage.xml
-        if: matrix.python-version == '3.11'
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-xml
-          path: coverage.xml
+        run: pytest -v --cov=switchboard --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == '3.11'
