@@ -1,0 +1,112 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+assignees: ["jlov7"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report
+
+        Thank you for reporting a bug! Please fill out this form as completely as possible to help us understand and fix the issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: |
+        What happened? What did you expect to happen?
+
+        Example: When I try to [action], [unexpected behavior] occurs instead of [expected behavior].
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: |
+        Provide a step-by-step guide on how to reproduce the bug.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+      render: bash
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: What should happen instead?
+      placeholder: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual behavior
+      description: What actually happens?
+      placeholder: A clear and concise description of what actually happens.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: |
+        Please provide details about your environment:
+        - OS: [e.g. Linux, macOS, Windows]
+        - Python version: [e.g. 3.9, 3.10, 3.11]
+        - Switchboard version: [e.g. 0.1.0]
+        - Docker version (if applicable): [e.g. 24.0.0]
+      placeholder: |
+        - OS: Ubuntu 22.04
+        - Python: 3.11.5
+        - Switchboard: 0.1.0
+        - Docker: 24.0.0
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: |
+        Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      placeholder: |
+        Paste your logs here...
+      render: shell
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: |
+        Add any other context about the problem here.
+        - Screenshots (if applicable)
+        - Related issues
+        - Possible solutions you've considered
+      placeholder: Add any other context or screenshots about the bug report here.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Please check all that apply to this bug report.
+      options:
+        - label: I have searched existing issues for duplicates
+          required: true
+        - label: I have provided a minimal reproduction case
+          required: true
+        - label: I have included relevant logs and environment details
+          required: true
+        - label: This is not a security vulnerability report (for security issues, please email security@switchboard.dev)
+          required: true
