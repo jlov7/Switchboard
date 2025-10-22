@@ -35,9 +35,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]" bandit[toml] safety
 
-      - name: Run pre-commit checks
-        run: pre-commit run --all-files --show-diff-on-failure
-
       - name: Lint (Ruff)
         run: ruff check .
 

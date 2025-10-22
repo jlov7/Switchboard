@@ -1,3 +1,14 @@
+exclude: |
+  (?x)(
+      ^\.venv.*?/
+    | ^\.mypy_cache/
+    | ^\.pytest_cache/
+    | ^\.ruff_cache/
+    | ^data/
+    | ^reports/
+    | ^switchboard\.egg-info/
+    | ^docs/media/.+\.(gif|mp4|mov|png)$
+  )
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.6.9
@@ -18,4 +29,9 @@ repos:
     rev: v1.11.2
     hooks:
       - id: mypy
-        additional_dependencies: ["types-requests", "types-PyYAML"]
+        additional_dependencies:
+          - pydantic
+          - streamlit
+          - pytest
+          - types-requests
+          - types-PyYAML
