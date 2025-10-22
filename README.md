@@ -170,9 +170,15 @@ Telemetry: OTLP traces + metrics, structlog JSON logs with redacted arguments.
 
 ## Persistence & Configuration
 
-- `SWITCHBOARD_APPROVAL_BACKEND` – defaults to `persistent`; set to `memory` for ephemeral tests
+- `SWITCHBOARD_APPROVAL_BACKEND` – defaults to `memory`; set to `persistent` when you want the shared database-backed queue
 - `SWITCHBOARD_DATABASE_URL` – defaults to `sqlite+aiosqlite:///data/switchboard.db`; set to Postgres DSN for multi-instance deployments
 - `scripts/init_db.py` – bootstraps the schema; run via `make db-init`
+
+## Telemetry Controls
+
+- `SWITCHBOARD_ENABLE_TELEMETRY` – opt-in flag (defaults to disabled); set to `true` to emit OTLP traces/metrics
+- `OTEL_EXPORTER_OTLP_ENDPOINT` – override to point at your collector (defaults to `http://localhost:4317`)
+- `OTEL_SDK_DISABLED=1` – hard-disable all OpenTelemetry SDK wiring if you need a zero-overhead run
 
 ## Cloud Adapter Cheatsheet
 

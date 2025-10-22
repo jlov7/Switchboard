@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import asyncio
-from typing import Any
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from typing import Any, cast
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,29 +19,13 @@ from switchboard.api.schemas import (
 from switchboard.audit.service import AuditService
 from switchboard.core.approvals import ActionBlocked, ApprovalRequired, ApprovalStore
 from switchboard.core.logging import configure_logging
-from switchboard.core.models import (
-    ApprovalStatus,
-    HealthStatus,
-)
+from switchboard.core.models import ApprovalStatus, HealthStatus
 from switchboard.core.router import ActionRouter, AdapterRegistry
 from switchboard.policy.engine import PolicyEngine
-from switchboard.telemetry.setup import configure_telemetry
-
-configure_logging()
-configure_telemetry()
-
-app = FastAPI(title="Switchboard API", version="0.1.0")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+from switchboard.telemetry.setup import TelemetryController, configure_telemetry
 
 
-def get_router() -> ActionRouter:
+def build_router() -> ActionRouter:
     policy_engine = PolicyEngine()
     audit_service = AuditService()
     adapter_registry = AdapterRegistry()
@@ -53,29 +38,62 @@ def get_router() -> ActionRouter:
     )
 
 
-router_dependency = get_router()
-lock = asyncio.Lock()
+@asynccontextmanager
+async def lifespan(application: FastAPI) -> AsyncIterator[None]:
+    configure_logging()
+    telemetry: TelemetryController | None = configure_telemetry()
+
+    router = cast(ActionRouter | None, getattr(application.state, "router", None))
+    if router is None:
+        router = build_router()
+        application.state.router = router
+
+    await router.approvals.warmup()
+    try:
+        yield
+    finally:
+        await router.approvals.shutdown()
+        await router.adapter_registry.aclose()
+        if telemetry:
+            telemetry.shutdown()
 
 
-@app.on_event("startup")
-async def startup() -> None:
-    await router_dependency.approvals.warmup()
+app = FastAPI(title="Switchboard API", version="0.1.0", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-@app.on_event("shutdown")
-async def shutdown() -> None:
-    await router_dependency.approvals.shutdown()
-    await router_dependency.adapter_registry.aclose()
+def set_app_router(router: ActionRouter | None) -> None:
+    if router is None:
+        if hasattr(app.state, "router"):
+            delattr(app.state, "router")
+        return
+    app.state.router = router
+
+
+def get_app_router() -> ActionRouter:
+    router = getattr(app.state, "router", None)
+    if router is None:
+        router = build_router()
+        app.state.router = router
+    return cast(ActionRouter, router)
 
 
 @app.post("/route", response_model=RouteResponse)
 async def route_action(payload: RouteRequest) -> Any:
+    router = get_app_router()
     try:
-        result, policy = await router_dependency.route(payload.request)
+        result, policy = await router.route(payload.request)
         return RouteResponse(
             result="executed",
             detail=result.detail,
-            adapter=router_dependency._determine_adapter(payload.request),
+            adapter=router._determine_adapter(payload.request),
             policy=policy,
             response=result.response,
         )
@@ -103,15 +121,14 @@ async def route_action(payload: RouteRequest) -> Any:
 
 
 @app.post("/approve")
-async def approve_action(
-    payload: ApprovalActionRequest,
-) -> Any:
+async def approve_action(payload: ApprovalActionRequest) -> Any:
+    router = get_app_router()
     if payload.status == ApprovalStatus.PENDING:
         raise HTTPException(status_code=400, detail="Cannot transition to pending")
-    record = await router_dependency.approvals.get(payload.approval_id)
+    record = await router.approvals.get(payload.approval_id)
     if not record:
         raise HTTPException(status_code=404, detail="Approval request not found")
-    audit_record, decision = await router_dependency.approvals.resolve(
+    audit_record, decision = await router.approvals.resolve(
         approval_id=payload.approval_id,
         status=payload.status,
         decided_by=payload.decided_by,
@@ -120,9 +137,7 @@ async def approve_action(
     if payload.status == ApprovalStatus.DENIED:
         return {"result": "denied", "approval_id": str(payload.approval_id)}
 
-    adapter = router_dependency.adapter_registry.get(decision.target_adapter)
-    async with lock:
-        result = await adapter.execute_action(audit_record.request)
+    result = await router.execute_adapter(decision.target_adapter, audit_record.request)
     return {
         "result": "executed",
         "detail": result.detail,
@@ -133,13 +148,15 @@ async def approve_action(
 
 @app.post("/policy/check", response_model=PolicyCheckResponse)
 async def policy_check(payload: PolicyCheckRequest) -> PolicyCheckResponse:
-    decision = await router_dependency.policy_engine.evaluate(payload.request)
+    router = get_app_router()
+    decision = await router.policy_engine.evaluate(payload.request)
     return PolicyCheckResponse(policy=decision)
 
 
 @app.get("/approvals/pending")
 async def approvals_pending() -> Any:
-    pending = await router_dependency.approvals.pending_details()
+    router = get_app_router()
+    pending = await router.approvals.pending_details()
     return [
         {
             "approval_id": str(approval_id),
@@ -153,7 +170,8 @@ async def approvals_pending() -> Any:
 
 @app.post("/audit/verify")
 async def audit_verify(payload: AuditVerifyRequest) -> Any:
-    valid = await router_dependency.audit_service.verify(payload.record)
+    router = get_app_router()
+    valid = await router.audit_service.verify(payload.record)
     if not valid:
         raise HTTPException(status_code=400, detail="Invalid signature")
     return {"result": "verified"}

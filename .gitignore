@@ -1,4 +1,5 @@
 .venv/
+.venv*/
 __pycache__/
 *.pyc
 .mypy_cache/
@@ -17,3 +18,4 @@ postgres-data/
 data/
 *.log
 reports/
+.hypothesis/

@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import Any, cast
 
 import pytest
 from httpx import ASGITransport, AsyncClient
 
 from switchboard.adapters.base import AdapterResult, BaseAdapter
-from switchboard.api.main import app, router_dependency
+from switchboard.api.main import app, build_router, set_app_router
 from switchboard.core.models import ActionRequest, ActionSeverity
 
 
@@ -16,12 +17,16 @@ class StubAdapter(BaseAdapter):
 
 
 @pytest.fixture(autouse=True)
-def setup_router(monkeypatch: pytest.MonkeyPatch) -> None:
+def setup_router(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     monkeypatch.setenv("SWITCHBOARD_USE_OPA", "false")
     monkeypatch.setenv("SWITCHBOARD_APPROVAL_BACKEND", "memory")
     monkeypatch.setenv("SWITCHBOARD_DATABASE_URL", "sqlite+aiosqlite:///:memory:")
-    router_dependency.adapter_registry._adapters = {}
-    router_dependency.adapter_registry.register("mcp", StubAdapter("mcp"))
+    router = build_router()
+    router.adapter_registry._adapters = {}
+    router.adapter_registry.register("mcp", StubAdapter("mcp"))
+    set_app_router(router)
+    yield
+    set_app_router(None)
 
 
 @pytest.mark.asyncio

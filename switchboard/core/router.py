@@ -56,7 +56,7 @@ class ActionRouter:
         self.adapter_registry = adapter_registry or AdapterRegistry()
         self.approvals = approvals or ApprovalStore()
         self._register_default_adapters()
-        self._lock = asyncio.Lock()
+        self._adapter_locks: dict[str, asyncio.Lock] = {}
 
     def _register_default_adapters(self) -> None:
         if not self.adapter_registry._adapters:
@@ -97,9 +97,7 @@ class ActionRouter:
             approval_id = await self.approvals.create_pending(audit_record, route_decision)
             raise ApprovalRequired(route_decision, approval_id)
 
-        adapter = self.adapter_registry.get(route_decision.target_adapter)
-        async with self._lock:
-            result = await adapter.execute_action(request)
+        result = await self.execute_adapter(route_decision.target_adapter, request)
         return result, policy
 
     def _determine_adapter(self, request: ActionRequest) -> str:
@@ -110,3 +108,15 @@ class ActionRouter:
         if request.tool_name.startswith("vertex:"):
             return "vertex"
         return "mcp"
+
+    def _lock_for_adapter(self, adapter_name: str) -> asyncio.Lock:
+        lock = self._adapter_locks.get(adapter_name)
+        if lock is None:
+            lock = asyncio.Lock()
+            self._adapter_locks[adapter_name] = lock
+        return lock
+
+    async def execute_adapter(self, adapter_name: str, request: ActionRequest) -> AdapterResult:
+        adapter = self.adapter_registry.get(adapter_name)
+        async with self._lock_for_adapter(adapter_name):
+            return await adapter.execute_action(request)
