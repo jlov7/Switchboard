@@ -1,0 +1,17 @@
+rate_limits:
+  default:
+    window_seconds: 60
+    limit: 10
+  p0:
+    window_seconds: 300
+    limit: 1
+
+sensitivity:
+  requires_approval_tags:
+    - financial
+    - legal
+
+roles:
+  prod:
+    allowed_roles:
+      - ops

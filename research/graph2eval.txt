@@ -1,0 +1,40 @@
+%PDF-1.7
+%¿÷¢þ
+1 0 obj
+<< /Metadata 3 0 R /Names 4 0 R /OpenAction 5 0 R /Outlines 6 0 R /PageMode /UseOutlines /Pages 7 0 R /Type /Catalog >>
+endobj
+2 0 obj
+<< /Author (Yurun Chen; Xavier Hu; Yuhan Liu; Ziqi Wang; Zeyi Liao; Lin Chen; Feng Wei; Yuxi Qian; Bo Zheng; Keting Yin; Shengyu Zhang) /Creator (arXiv GenPDF \(tex2pdf:e76afa9\)) /DOI (https://doi.org/10.48550/arXiv.2510.00507) /License (http://arxiv.org/licenses/nonexclusive-distrib/1.0/) /PTEX.Fullbanner (This is pdfTeX, Version 3.141592653-2.6-1.40.28 \(TeX Live 2025\) kpathsea version 6.4.1) /Producer (pikepdf 8.15.1) /Title (Graph2Eval: Automatic Multimodal Task Generation for Agents via Knowledge Graphs) /Trapped /False /arXivID (https://arxiv.org/abs/2510.00507v2) >>
+endobj
+3 0 obj
+<< /Subtype /XML /Type /Metadata /Length 1869 >>
+stream
+<?xpacket begin="ï»¿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="pikepdf">
+ <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <rdf:Description rdf:about=""><dc:title xmlns:dc="http://purl.org/dc/elements/1.1/"><rdf:Alt><rdf:li xml:lang="x-default">Graph2Eval: Automatic Multimodal Task Generation for Agents via Knowledge Graphs</rdf:li></rdf:Alt></dc:title></rdf:Description><rdf:Description rdf:about=""><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/"><rdf:Seq><rdf:li>Yurun Chen</rdf:li><rdf:li>Xavier Hu</rdf:li><rdf:li>Yuhan Liu</rdf:li><rdf:li>Ziqi Wang</rdf:li><rdf:li>Zeyi Liao</rdf:li><rdf:li>Lin Chen</rdf:li><rdf:li>Feng Wei</rdf:li><rdf:li>Yuxi Qian</rdf:li><rdf:li>Bo Zheng</rdf:li><rdf:li>Keting Yin</rdf:li><rdf:li>Shengyu Zhang</rdf:li></rdf:Seq></dc:creator></rdf:Description><rdf:Description xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:about="" dc:publisher="arXiv"/><rdf:Description xmlns:xmp="http://ns.adobe.com/xap/1.0/" rdf:about="" xmp:CreatorTool="arXiv GenPDF (tex2pdf:e76afa9)"/><rdf:Description rdf:about=""><dc:rights xmlns:dc="http://purl.org/dc/elements/1.1/"><rdf:Alt><rdf:li xml:lang="x-default">http://arxiv.org/licenses/nonexclusive-distrib/1.0/</rdf:li></rdf:Alt></dc:rights></rdf:Description><rdf:Description xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:about="" dc:identifier="https://arxiv.org/abs/2510.00507v2"/><rdf:Description rdf:about=""><dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/"><rdf:Seq><rdf:li>cs.CL</rdf:li><rdf:li>cs.AI</rdf:li></rdf:Seq></dc:subject></rdf:Description><rdf:Description xmlns:xmp="http://ns.adobe.com/xap/1.0/" rdf:about="" xmp:MetadataDate="2025-10-15T00:22:21.678561+00:00"/><rdf:Description xmlns:pdf="http://ns.adobe.com/pdf/1.3/" rdf:about="" pdf:Producer="pikepdf 8.15.1"/></rdf:RDF>
+</x:xmpmeta>
+
+<?xpacket end="w"?>
+
+endstream
+endobj
+4 0 obj
+<< /Dests 8 0 R >>
+endobj
+5 0 obj
+<< /D [ 9 0 R /Fit ] /S /GoTo >>
+endobj
+6 0 obj
+<< /Count 13 /First 10 0 R /Last 11 0 R /Type /Outlines >>
+endobj
+7 0 obj
+<< /Count 20 /Kids [ 12 0 R 13 0 R 14 0 R 15 0 R ] /Type /Pages >>
+endobj
+8 0 obj
+<< /Kids [ 16 0 R 17 0 R 18 0 R 19 0 R 20 0 R ] /Limits [ (AlgoLine.1.1) (table.4) ] >>
+endobj
+9 0 obj
+<< /Annots [ 21 0 R 22 0 R ] /Contents [ 23 0 R 24 0 R 25 0 R 26 0 R ] /Group 27 0 R /MediaBox [ 0 0 612 792 ] /Parent 12 0 R /Resources 28 0 R /Type /Page >>
+endobj
+10 0 obj

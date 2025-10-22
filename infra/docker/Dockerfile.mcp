@@ -1,0 +1,16 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /app
+
+COPY pyproject.toml README.md ./
+RUN pip install --upgrade pip && pip install ".[dev]"
+
+COPY apps/mcp_server ./apps/mcp_server
+COPY switchboard ./switchboard
+
+EXPOSE 8081
+
+CMD ["python", "-m", "apps.mcp_server.main"]

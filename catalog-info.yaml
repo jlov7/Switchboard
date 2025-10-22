@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: switchboard-research
+  description: "Switchboard — personal research project exploring MCP↔ACP governance"
+  tags:
+    - research
+    - governance
+    - agents
+  links:
+    - url: https://github.com/placeholder/switchboard
+      title: Repository
+spec:
+  type: service
+  lifecycle: experimental
+  owner: platform-research

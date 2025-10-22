@@ -1,0 +1,4 @@
+# file: /Users/jasonlovell/AI/Work Prototypes/Switchboard/switchboard/policy/engine.py
+# hypothesis_version: 6.142.2
+
+['OPA_URL', 'SWITCHBOARD_USE_OPA', 'allowed', 'critical', 'default', 'false', 'high', 'limit', 'medium', 'ops', 'p0', 'policy:pii-approval', 'policy:prod-role', 'policy:rate-limit', 'prod', 'rate limit exceeded', 'rate_limits', 'role', 'sensitivity', 'true', 'utf-8', 'window_seconds']

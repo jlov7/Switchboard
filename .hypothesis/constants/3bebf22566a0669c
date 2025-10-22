@@ -1,0 +1,4 @@
+# file: /Users/jasonlovell/AI/Work Prototypes/Switchboard/switchboard/adapters/__init__.py
+# hypothesis_version: 6.142.2
+
+['ACPAdapter', 'BaseAdapter', 'MCPAdapter']

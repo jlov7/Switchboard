@@ -1,0 +1,4 @@
+# file: /Users/jasonlovell/AI/Work Prototypes/Switchboard/switchboard/telemetry/setup.py
+# hypothesis_version: 6.142.2
+
+['service.name', 'switchboard-api']

@@ -1,0 +1,46 @@
+name: Newsletter
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: "Newsletter title"
+        required: true
+      highlights:
+        description: "Bullet list of highlights"
+        required: true
+      lab:
+        description: "Featured lab link"
+        required: true
+      next_steps:
+        description: "Upcoming experiments"
+        required: true
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render newsletter
+        run: |
+          cat <<'TEMPLATE' > newsletter.md
+          # Switchboard Research Dispatch
+
+          **Title:** ${{ github.event.inputs.title }}
+
+          ## Highlights
+          ${{ github.event.inputs.highlights }}
+
+          ## Featured Lab
+          ${{ github.event.inputs.lab }}
+
+          ## Next Experiments
+          ${{ github.event.inputs.next_steps }}
+
+          *(Generated for the Switchboard research project — personal passion project)*
+          TEMPLATE
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: newsletter
+          path: newsletter.md
