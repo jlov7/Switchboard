@@ -145,7 +145,6 @@ jobs:
         with:
           context: .
           file: infra/docker/Dockerfile.api
-          target: production
           push: false
           tags: switchboard-api:test
           cache-from: type=gha
@@ -156,7 +155,6 @@ jobs:
         with:
           context: .
           file: infra/docker/Dockerfile.mcp
-          target: production
           push: false
           tags: switchboard-mcp:test
           cache-from: type=gha
