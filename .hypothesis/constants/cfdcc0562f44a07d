@@ -1,0 +1,4 @@
+# file: /Users/jasonlovell/AI/Work Prototypes/Switchboard/switchboard/adapters/acp/client.py
+# hypothesis_version: 6.142.2
+
+[10.0, '/forward', 'ACP_ENDPOINT', 'acp', 'action', 'arguments', 'from_agent', 'metadata', 'request_id', 'tool']

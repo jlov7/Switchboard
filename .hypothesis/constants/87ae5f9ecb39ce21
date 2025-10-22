@@ -1,0 +1,4 @@
+# file: /Users/jasonlovell/AI/Work Prototypes/Switchboard/switchboard/api/main.py
+# hypothesis_version: 6.142.2
+
+[400, 404, '*', '/approvals/pending', '/approve', '/audit/verify', '/healthz', '/policy/check', '/route', '0.1.0', 'Invalid signature', 'Switchboard API', 'adapter', 'approval_id', 'approval_required', 'blocked', 'denied', 'detail', 'executed', 'ok', 'pending_approval', 'policy', 'request', 'result', 'shutdown', 'startup', 'switchboard-api', 'verified']

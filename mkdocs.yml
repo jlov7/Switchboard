@@ -1,0 +1,20 @@
+site_name: Switchboard Research
+site_description: Personal passion project exploring MCP↔ACP governance
+repo_url: https://github.com/placeholder/switchboard
+nav:
+  - Home: docs/index.md
+  - Overview: docs/OVERVIEW.md
+  - Architecture: docs/ARCHITECTURE.md
+  - Security: docs/SECURITY.md
+  - Operations: docs/OPERATIONS.md
+  - Testing: docs/TESTING.md
+  - Chaos: docs/CHAOS.md
+  - Observability: docs/OBSERVABILITY_GRAFANA.md
+  - Labs:
+      - Change Request (guide): docs/labs/change_request_lab.md
+      - Change Request (notebook): docs/labs/change_request_lab.ipynb
+  - Evaluations: docs/EVALS.md
+  - Growth: docs/GROWTH_PLAYBOOK.md
+  - Media:
+      - Poster: docs/media/switchboard_poster.md
+      - Demo Instructions: docs/media/demo_instructions.md

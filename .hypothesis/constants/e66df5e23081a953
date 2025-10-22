@@ -1,0 +1,4 @@
+# file: /Users/jasonlovell/AI/Work Prototypes/Switchboard/switchboard/audit/signer.py
+# hypothesis_version: 6.142.2
+
+['AUDIT_SIGNING_KEY', 'HS256', 'switchboard-dev-key']

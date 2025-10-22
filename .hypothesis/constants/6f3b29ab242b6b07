@@ -1,0 +1,4 @@
+# file: /Users/jasonlovell/AI/Work Prototypes/Switchboard/switchboard/adapters/aws/bedrock.py
+# hypothesis_version: 6.142.2
+
+['AWS_BEDROCK_AGENT_ID', 'AWS_DEFAULT_REGION', 'AWS_REGION', 'SWITCHBOARD_AWS_MODE', 'TSTALIASID', 'agentAliasId', 'agentId', 'agent_alias_id', 'agent_id', 'bedrock', 'bedrock dry-run', 'bedrock-demo-agent', 'completion', 'content', 'dry-run', 'echo', 'enableTrace', 'enable_trace', 'inputText', 'input_text', 'live', 'mode', 'sessionId', 'sessionState', 'session_state']

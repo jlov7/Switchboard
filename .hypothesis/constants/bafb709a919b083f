@@ -1,0 +1,4 @@
+# file: /Users/jasonlovell/AI/Work Prototypes/Switchboard/switchboard/audit/rekor_client.py
+# hypothesis_version: 6.142.2
+
+[5.0, 200, 400, '/api/v1/log/entries', 'REKOR_URL', 'a', 'data/audit-log.jsonl', 'offline://', 'unknown', 'utf-8', 'uuid']

@@ -1,0 +1,4 @@
+# file: /Users/jasonlovell/AI/Work Prototypes/Switchboard/switchboard/adapters/google/vertex.py
+# hypothesis_version: 6.142.2
+
+[15.0, 'Authorization', 'GOOGLE_CLOUD_PROJECT', 'SWITCHBOARD_GCP_MODE', 'VERTEX_AGENT_ID', 'VERTEX_LOCATION', 'agent', 'content', 'dry-run', 'echo', 'input_text', 'inputs', 'live', 'mode', 'parameters', 'project', 'role', 'session', 'us-central1', 'user', 'vertex', 'vertex dry-run', 'vertex-demo']

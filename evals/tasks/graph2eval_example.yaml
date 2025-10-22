@@ -1,0 +1,54 @@
+suite: graph2eval-demo
+tasks:
+  - name: allowed-action
+    request:
+      context:
+        agent_id: eval-agent
+        principal_id: auditor
+        tenant_id: demo
+        severity: p1
+        metadata:
+          role: ops
+      tool_name: jira
+      tool_action: create_issue
+      arguments:
+        data:
+          project: SW
+          summary: Eval allowed action
+        redacted_fields: []
+  - name: approval-required
+    request:
+      context:
+        agent_id: eval-agent
+        principal_id: auditor
+        tenant_id: demo
+        severity: p1
+        pii: true
+        sensitivity_tags: ["financial"]
+        metadata:
+          role: ops
+      tool_name: jira
+      tool_action: update_issue
+      arguments:
+        data:
+          issue_key: SW-999
+          fields:
+            description: Contains PII
+        redacted_fields: ["description"]
+  - name: blocked-prod
+    request:
+      context:
+        agent_id: eval-agent
+        principal_id: auditor
+        tenant_id: demo
+        severity: p0
+        resource_scope: prod
+        metadata:
+          role: analyst
+      tool_name: github
+      tool_action: comment_issue
+      arguments:
+        data:
+          repository: example/repo
+          issue: 99
+        redacted_fields: []

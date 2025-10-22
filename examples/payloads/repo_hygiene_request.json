@@ -1,0 +1,21 @@
+{
+  "request": {
+    "context": {
+      "agent_id": "demo-agent",
+      "principal_id": "user-123",
+      "tenant_id": "demo",
+      "severity": "p1",
+      "metadata": {"role": "ops"}
+    },
+    "tool_name": "partner:repo-bot",
+    "tool_action": "sync_comments",
+    "arguments": {
+      "data": {
+        "repository": "example/repo",
+        "pull_request": 42,
+        "comment": "Ensuring compliance labels are applied."
+      },
+      "redacted_fields": []
+    }
+  }
+}

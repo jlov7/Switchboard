@@ -1,0 +1,4 @@
+# file: /Users/jasonlovell/AI/Work Prototypes/Switchboard/switchboard/adapters/mcp/client.py
+# hypothesis_version: 6.142.2
+
+[10.0, '/actions', 'MCP_SERVER_URL', 'action', 'arguments', 'context', 'mcp', 'request_id', 'tool']

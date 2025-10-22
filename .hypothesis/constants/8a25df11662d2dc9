@@ -1,0 +1,4 @@
+# file: /Users/jasonlovell/AI/Work Prototypes/Switchboard/switchboard/audit/service.py
+# hypothesis_version: 6.142.2
+
+['a', 'algorithm', 'data/audit-log.jsonl', 'offline', 'record', 'signature', 'signature_algorithm', 'utf-8', 'verification_url']

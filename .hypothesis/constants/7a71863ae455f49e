@@ -1,0 +1,4 @@
+# file: /Users/jasonlovell/AI/Work Prototypes/Switchboard/switchboard/policy/opa_client.py
+# hypothesis_version: 6.142.2
+
+[5.0, 400, 'activity', 'allow', 'allowed', 'arguments', 'context', 'denied', 'input', 'medium', 'policy', 'policy_ids', 'rate_limit', 'reason', 'request', 'requires_approval', 'result', 'risk_level', 'tool_action', 'tool_name', 'window_count']
