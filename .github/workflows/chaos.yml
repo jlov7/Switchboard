@@ -6,6 +6,9 @@ on:
 jobs:
   chaos:
     runs-on: ubuntu-latest
+    env:
+      SWITCHBOARD_APPROVAL_BACKEND: memory
+      SWITCHBOARD_ENABLE_TELEMETRY: "false"
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python

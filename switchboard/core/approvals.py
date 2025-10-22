@@ -11,7 +11,7 @@ from switchboard.storage.approvals import PersistentApprovalStore
 class ApprovalStore:
     def __init__(self, backend: str | None = None) -> None:
         env_backend = os.getenv("SWITCHBOARD_APPROVAL_BACKEND")
-        self._backend = (backend or env_backend or "persistent").lower()
+        self._backend = (backend or env_backend or "memory").lower()
         self._pending: dict[UUID, tuple[AuditRecord, RouteDecision]] = {}
         self._lock = asyncio.Lock()
         self._persistent: PersistentApprovalStore | None = None
