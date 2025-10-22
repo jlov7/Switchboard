@@ -18,24 +18,24 @@
 
 ## 🎯 Mission
 
-Switchboard is a production-ready platform for orchestrating AI agents across multiple providers (OpenAI, AWS Bedrock, Google Vertex) with policy-based approvals, cryptographic audit trails, and comprehensive observability. Built for enterprises that need to govern autonomous agent actions while maintaining developer velocity.
+Switchboard is an independent R&D sandbox for orchestrating AI agents across multiple providers (OpenAI, AWS Bedrock, Google Vertex) while experimenting with policy-based approvals, cryptographic audit trails, and observability. It exists to explore governance patterns—not to provide a production SLA.
 
-**🔬 Research Edition**: This started as a personal passion project exploring agent governance, but has evolved into a comprehensive platform ready for production use.
+**🔬 Research Edition**: This is a personal passion project. The code is shared so others can learn, remix, and critique; any production claims require your own hardening, threat modelling, and operational controls.
 
 ## ✨ Key Features
 
 | Feature | Description | Status |
 |---------|-------------|--------|
-| **🔧 Multi-Provider Support** | OpenAI, AWS Bedrock AgentCore, Google Vertex AI | ✅ Production Ready |
-| **🛡️ Policy-Based Governance** | OPA (Open Policy Agent) with custom rules | ✅ Production Ready |
-| **✅ Human Approval Workflows** | Persistent approval system with UI | ✅ Production Ready |
-| **📋 Cryptographic Audit Trails** | COSE signatures + Rekor transparency logs | ✅ Production Ready |
-| **📊 Enterprise Observability** | OTLP traces, metrics, structured logging | ✅ Production Ready |
-| **🔒 Security Scanning** | CodeQL, Bandit, Safety vulnerability scanning | ✅ Production Ready |
-| **🚀 CI/CD Pipeline** | Automated testing, Docker builds, releases | ✅ Production Ready |
-| **📦 Container Ready** | Multi-stage Docker builds for all components | ✅ Production Ready |
-| **🔄 Auto Dependency Updates** | Dependabot for Python, GitHub Actions, Docker | ✅ Production Ready |
-| **🧪 Comprehensive Testing** | Unit, integration, property-based, chaos testing | ✅ Production Ready |
+| **🔧 Multi-Provider Support** | OpenAI, AWS Bedrock AgentCore, Google Vertex AI | 🧪 Research Prototype |
+| **🛡️ Policy-Based Governance** | OPA (Open Policy Agent) with custom rules | 🧪 Research Prototype |
+| **✅ Human Approval Workflows** | Persistent approval system with UI | 🧪 Research Prototype |
+| **📋 Cryptographic Audit Trails** | COSE signatures + Rekor transparency logs | 🧪 Research Prototype |
+| **📊 Enterprise Observability** | OTLP traces, metrics, structured logging | 🧪 Research Prototype |
+| **🔒 Security Scanning** | CodeQL, Bandit, Safety vulnerability scanning | 🧪 Research Prototype |
+| **🚀 CI/CD Pipeline** | Automated testing, Docker builds, releases | 🧪 Research Prototype |
+| **📦 Container Ready** | Multi-stage Docker builds for all components | 🧪 Research Prototype |
+| **🔄 Auto Dependency Updates** | Dependabot for Python, GitHub Actions, Docker | 🧪 Research Prototype |
+| **🧪 Comprehensive Testing** | Unit, integration, property-based, chaos testing | 🧪 Research Prototype |
 
 ## Why This Exists (Research Framing)
 
@@ -87,7 +87,7 @@ make mutation            # run mutation smoke test
 ./scripts/run_grafana_stack.sh
 ```
 
-### Option 2: Docker Compose (Production Ready)
+### Option 2: Docker Compose (Demo Stack)
 
 ```bash
 # Pull the latest release images
@@ -125,6 +125,12 @@ Endpoints & consoles:
 - API docs: http://localhost:8000/docs
 - Approvals UI (accessible Streamlit): http://localhost:8501
 - Audit log: `data/audit-log.jsonl`
+
+## Media & Storytelling Assets
+
+- [`docs/media/switchboard_poster.md`](docs/media/switchboard_poster.md) – speaker-ready poster with architecture callouts
+- [`docs/media/demo_instructions.md`](docs/media/demo_instructions.md) – narrated walkthrough script for live demos or recordings
+- [`docs/GROWTH_PLAYBOOK.md`](docs/GROWTH_PLAYBOOK.md) – social/shareable framing to pair with the visuals
 
 ## Testing & Quality Gates
 
