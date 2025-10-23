@@ -97,7 +97,15 @@ demo-e2e:
 
 .PHONY: audit-verify
 audit-verify:
-	bash scripts/verify_audit.sh
+	@if [ -z "$(AUDIT_ID)" ]; then \
+		echo "AUDIT_ID is required: make audit-verify AUDIT_ID=<uuid> [REKOR_URL=<url>]"; \
+		exit 1; \
+	fi
+	@if [ -n "$(REKOR_URL)" ]; then \
+		bash scripts/verify_audit.sh $(AUDIT_ID) --rekor-url $(REKOR_URL); \
+	else \
+		bash scripts/verify_audit.sh $(AUDIT_ID); \
+	fi
 
 .PHONY: eval
 eval:

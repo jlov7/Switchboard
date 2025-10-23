@@ -1,14 +1,37 @@
 # Security & Compliance Playbook
 
 ## Policy Controls
-- **Segregation of Duties**: Production actions require `role=ops`. Extend with department-level policies to prevent self-approval.
+- **Segregation of Duties**: Production actions require `role=ops`, and metadata-supplied approver IDs are blocked from self-approval in the default Rego bundle.
 - **PII Handling**: `pii=true` or financial/legal sensitivity tags force manual approvals and redact payload fields in logs.
 - **Rate Limiting**: Severity-aware token bucket ensures high-severity actions are rare and reviewable.
 
 ## Provenance & Audit
 - Every decision produces a signed `AuditRecord` (COSE-style with deterministic HMAC for demo).
 - `RekorClient` logs entries to Sigstore-compatible transparency log; offline fallback ensures air-gapped environments still capture events.
-- `scripts/verify_audit.sh` verifies signatures locally. Integrate with your GRC tooling to automate evidence collection.
+- `scripts/verify_audit.sh <AUDIT_EVENT_ID> [--rekor-url ...] [--json]` produces a signed receipt (text or JSON), verifies Rekor inclusion when available, and exits non-zero on failure. Integrate with your GRC tooling to automate evidence collection.
+
+### API Contract: `/audit/verify`
+
+```http
+POST /audit/verify
+Content-Type: application/json
+
+{
+  "record": { ...AuditRecord payload... },
+  "verify_rekor": true
+}
+```
+
+```json
+{
+  "verified": true,
+  "signature_valid": true,
+  "rekor_included": null,
+  "failure_reason": null
+}
+```
+
+The endpoint validates the COSE-style signature and, when `verify_rekor` is `true`, confirms inclusion in the configured Rekor instance. Failed checks return the same shape with `verified: false` and a populated `failure_reason` so clients can surface precise issues (e.g., signature mismatch, Rekor outage).
 
 ## Secrets & Config
 - `.env.example` documents required environment variables. Use HashiCorp Vault or cloud secrets managers in production.

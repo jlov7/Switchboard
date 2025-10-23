@@ -21,9 +21,12 @@ User / Agent --> Switchboard API --> Adapter (MCP/ACP) --> Tool / Partner Agent
 - Wraps Open Policy Agent (OPA) but fails open into a deterministic **LocalPolicyEngine** so tests/demos never stall if OPA is offline.
 - Rego bundle (`switchboard/policy/base.rego`) codifies:
   - `role=ops` requirement for production scopes.
+  - Segregation of duties gate that blocks self-approval attempts surfaced through metadata.
+  - P0 requests paired with sensitive tags are hard-denied to force redesign of the action.
   - `p0` severity rate limiting (1 per 5 minutes).
   - Automatic approval for `pii` or `sensitivity_tags` that hit financial/legal keywords.
-- Local engine mirrors the same checks and keeps a sliding window per tenant/tool/severity to enforce rate limits.
+- Bundle emits `policy_ids`, joined `reason`, and `risk_level` so downstream services see the exact policy rationale.
+- Local engine mirrors the same checks (SoD, prod gating, sensitive P0 deny, approval tagging, severity escalations) and keeps a sliding window per tenant/tool/severity to enforce rate limits even if OPA is offline.
 
 ### Adapters
 - **MCPAdapter**: Bridges to the example MCP server (Jira + GitHub tools). Real-world connectors swap the HTTP endpoint with your MCP broker.
@@ -33,12 +36,12 @@ User / Agent --> Switchboard API --> Adapter (MCP/ACP) --> Tool / Partner Agent
 ### Audit & Provenance
 - Deterministic signature via `AuditSigner` (COSE-ready HMAC for demo). Swap with hardware-backed keys for production.
 - Persistent log (`data/audit-log.jsonl`) plus optional Rekor transparency append. Offline-friendly to avoid network blockers.
-- `scripts/verify_audit.sh` replays the signature for local assurance.
+- `scripts/verify_audit.sh <AUDIT_EVENT_ID> [--rekor-url] [--json]` replays the signature, (optionally) confirms Rekor inclusion, and surfaces a `failure_reason` when verification fails.
 
 ### Approvals Workflow
 - `ApprovalStore` tracks pending approvals with route metadata.
 - `ApprovalStore` now defaults to the persistent backend (`switchboard/storage/approvals.py`) using SQLite/Postgres for shared state.
-- **Streamlit UI** polls `/approvals/pending`, letting dual-control approvers review sanitized payloads and approve/deny with keyboard shortcuts.
+- **Streamlit UI** polls `/approvals/pending`, surfaces policy rationale/risk, provides a copyable `verify_audit.sh` command, runs live `/audit/verify` checks, and offers JSON receipt downloads before approvers decide.
 - Accessibility taken seriously: descriptive headings, container borders, actionable text for screen readers.
 
 ### Telemetry & Observability

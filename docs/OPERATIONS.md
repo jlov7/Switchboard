@@ -11,9 +11,10 @@
 - **Audit Retrieval**: Tail `data/audit-log.jsonl` or access Rekor entry referenced in `verification_url`.
 - **Policy Updates**: Modify Rego files, rerun `scripts/seed_policies.py`, and version policies via Git tags.
 - **Adapter Lifecycle**: Register new adapters in `AdapterRegistry`; ensure health checks before enabling.
+- **Approvals UI**: Operators see policy rationale, risk level, a copy-paste audit verification command, can run a live `/audit/verify` check, and download the JSON receipt for evidence.
 
 ## Incident Response
-1. Use `scripts/verify_audit.sh` to confirm integrity of suspect events.
+1. Use `scripts/verify_audit.sh <AUDIT_EVENT_ID>` (optionally `--rekor-url`, `--json`) to confirm integrity of suspect events; failures emit a `failure_reason` line or JSON field for instant triage.
 2. Query approvals UI for outstanding requests; deny suspicious items.
 3. Adjust policies and redeploy (hot reload supported when using Uvicorn in dev mode).
 4. Document outcomes in your GRC tooling using export from `data/audit-log.jsonl`.
@@ -25,7 +26,7 @@
 
 ## Backup & Recovery
 - Persisted artifacts: Postgres DB (policies, approvals), audit log, policy bundles.
-- Back up using standard cloud snapshots. Verify restore by running `scripts/verify_audit.sh` on restored logs.
+- Back up using standard cloud snapshots. Verify restore by running `scripts/verify_audit.sh <AUDIT_EVENT_ID>` on restored logs and confirm the absence of a `failure_reason`.
 
 ## Change Management
 - Use feature flags or configuration toggles for new policies.
