@@ -4,6 +4,7 @@ import os
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass
+from typing import Any
 
 import httpx
 import yaml
@@ -24,14 +25,29 @@ class LocalPolicyEngine:
         self.approval_tags = approval_tags
         self.activity_window: dict[tuple[str, str, str], deque[float]] = defaultdict(deque)
 
+    @staticmethod
+    def _extract_roles(metadata: dict[str, Any]) -> set[str]:
+        roles: set[str] = set()
+        direct = metadata.get("role")
+        if isinstance(direct, str):
+            roles.add(direct.strip().lower())
+        multi = metadata.get("roles")
+        if isinstance(multi, (list, tuple, set)):
+            for value in multi:
+                if isinstance(value, str):
+                    roles.add(value.strip().lower())
+        return {role for role in roles if role}
+
     def evaluate(self, request: ActionRequest) -> PolicyDecision:
         policy_ids: list[str] = []
         requires_approval = False
         allowed = True
-        reason = "allowed"
+        reasons: list[str] = []
         risk_level = "medium"
 
         context = request.context
+        metadata = context.metadata or {}
+        roles = self._extract_roles(metadata)
         now = time.time()
         key = (context.tenant_id, request.tool_name, context.severity.value)
         rate_config = self.rate_limits.get(context.severity.value, self.rate_limits["default"])
@@ -43,24 +59,58 @@ class LocalPolicyEngine:
         if context.severity.value == "p0":
             risk_level = "high"
 
-        if context.resource_scope == "prod" and context.metadata.get("role") != "ops":
+        approver = metadata.get("approver")
+        principal = context.principal_id
+        if (
+            isinstance(approver, str)
+            and isinstance(principal, str)
+            and approver.strip()
+            and approver.casefold() == principal.casefold()
+        ):
             allowed = False
-            reason = "role=ops required for prod scope"
-            policy_ids.append("policy:prod-role")
+            reasons.append("Segregation of duties: requester cannot approve")
+            if "policy:segregation-of-duties" not in policy_ids:
+                policy_ids.append("policy:segregation-of-duties")
+
+        if context.severity.value == "p0" and context.sensitivity_tags:
+            allowed = False
+            reasons.append("p0 action with sensitive tags denied")
+            if "policy:p0-sensitive-block" not in policy_ids:
+                policy_ids.append("policy:p0-sensitive-block")
+            risk_level = "critical"
+
+        if context.resource_scope == "prod" and "ops" not in roles:
+            allowed = False
+            reasons.append("role=ops required for prod scope")
+            if "policy:prod-role" not in policy_ids:
+                policy_ids.append("policy:prod-role")
+
+        if context.severity.value == "p0":
+            requires_approval = True
+            if risk_level != "critical":
+                risk_level = "high"
+            if "policy:pii-approval" not in policy_ids:
+                policy_ids.append("policy:pii-approval")
 
         if context.pii or any(tag in self.approval_tags for tag in context.sensitivity_tags):
             requires_approval = True
-            policy_ids.append("policy:pii-approval")
+            if "policy:pii-approval" not in policy_ids:
+                policy_ids.append("policy:pii-approval")
             if context.severity.value == "p0":
                 risk_level = "critical"
 
         if len(window) >= rate_config.limit:
             allowed = False
-            reason = "rate limit exceeded"
-            policy_ids.append("policy:rate-limit")
+            reasons.append("rate limit exceeded")
+            if "policy:rate-limit" not in policy_ids:
+                policy_ids.append("policy:rate-limit")
 
         if allowed:
             window.append(now)
+
+        reason = "allowed"
+        if reasons:
+            reason = "; ".join(dict.fromkeys(reasons))
 
         return PolicyDecision(
             allowed=allowed,

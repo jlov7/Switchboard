@@ -37,3 +37,11 @@ class PolicyCheckResponse(BaseModel):
 
 class AuditVerifyRequest(BaseModel):
     record: AuditRecord
+    verify_rekor: bool = True
+
+
+class AuditVerifyResponse(BaseModel):
+    verified: bool
+    signature_valid: bool
+    rekor_included: bool | None = None
+    failure_reason: str | None = None

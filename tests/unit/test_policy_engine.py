@@ -66,5 +66,43 @@ async def test_policy_engine_rate_limits_p0() -> None:
     request = build_request(severity=ActionSeverity.P0)
     first = await engine.evaluate(request)
     assert first.allowed is True
+    assert first.requires_approval is True
+    assert "policy:pii-approval" in first.policy_ids
+    assert first.risk_level in {"high", "critical"}
     second = await engine.evaluate(request)
     assert second.allowed is False
+    assert "policy:rate-limit" in second.policy_ids
+    assert second.reason == "rate limit exceeded"
+
+
+@pytest.mark.asyncio
+async def test_policy_engine_blocks_self_approval() -> None:
+    engine = PolicyEngine()
+    decision = await engine.evaluate(
+        build_request(metadata={"role": "ops", "approver": "user"})
+    )
+    assert decision.allowed is False
+    assert "policy:segregation-of-duties" in decision.policy_ids
+    assert decision.reason == "Segregation of duties: requester cannot approve"
+
+
+@pytest.mark.asyncio
+async def test_policy_engine_allows_ops_in_roles_list() -> None:
+    engine = PolicyEngine()
+    decision = await engine.evaluate(
+        build_request(metadata={"roles": ["dev", "ops"], "approver": "other"})
+    )
+    assert decision.allowed is True
+    assert decision.requires_approval is False
+
+
+@pytest.mark.asyncio
+async def test_policy_engine_blocks_sensitive_p0_actions() -> None:
+    engine = PolicyEngine()
+    decision = await engine.evaluate(
+        build_request(severity=ActionSeverity.P0, sensitivity_tags=["secret"])
+    )
+    assert decision.allowed is False
+    assert "policy:p0-sensitive-block" in decision.policy_ids
+    assert decision.reason == "p0 action with sensitive tags denied"
+    assert decision.risk_level == "critical"

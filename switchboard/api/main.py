@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from switchboard.api.schemas import (
     ApprovalActionRequest,
     AuditVerifyRequest,
+    AuditVerifyResponse,
     PolicyCheckRequest,
     PolicyCheckResponse,
     RouteRequest,
@@ -163,18 +164,31 @@ async def approvals_pending() -> Any:
             "request": record.request.model_dump(),
             "policy": record.policy_decision.model_dump(),
             "adapter": route.target_adapter,
+            "audit": {
+                "event_id": str(record.event_id),
+                "record": record.model_dump(),
+                "signature": record.signature,
+                "signature_algorithm": record.signature_algorithm,
+                "verification_url": record.verification_url,
+            },
         }
         for approval_id, (record, route) in pending.items()
     ]
 
 
-@app.post("/audit/verify")
-async def audit_verify(payload: AuditVerifyRequest) -> Any:
+@app.post("/audit/verify", response_model=AuditVerifyResponse)
+async def audit_verify(payload: AuditVerifyRequest) -> AuditVerifyResponse:
     router = get_app_router()
-    valid = await router.audit_service.verify(payload.record)
-    if not valid:
-        raise HTTPException(status_code=400, detail="Invalid signature")
-    return {"result": "verified"}
+    result = await router.audit_service.verify(
+        payload.record,
+        verify_rekor=payload.verify_rekor,
+    )
+    return AuditVerifyResponse(
+        verified=result.verified,
+        signature_valid=result.signature_valid,
+        rekor_included=result.rekor_included,
+        failure_reason=result.failure_reason,
+    )
 
 
 @app.get("/healthz", response_model=HealthStatus)

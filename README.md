@@ -88,7 +88,11 @@ make dev
 make demo-e2e
 
 # 6. Verify the signed audit trail
-make audit-verify
+# grab an audit event id from data/audit-log.jsonl (or approvals UI)
+make audit-verify AUDIT_ID=<uuid>
+# alternatively call the script directly (supports --rekor-url)
+./scripts/verify_audit.sh <AUDIT_EVENT_ID>
+# add --json for machine-readable receipts (ideal for CI or GRC ingestion)
 make coverage            # coverage gate
 make mutation            # run mutation smoke test
 # optional: auto-provision Grafana + Prometheus
