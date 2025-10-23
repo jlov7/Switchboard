@@ -14,6 +14,14 @@
 
 </div>
 
+[![Switchboard approval flow walkthrough](docs/media/generated/hero.gif)](docs/media/generated/hero.mp4)
+
+<div align="center">
+
+**🎬 Watch the 90-second hero demo →** [docs/media/generated/hero.mp4](docs/media/generated/hero.mp4)
+
+</div>
+
 ---
 
 ## 🎯 Mission
@@ -128,10 +136,14 @@ Endpoints & consoles:
 
 ## Media & Storytelling Assets
 
-- Regenerate the full media kit (hero video, GIF loops, screenshots, heatmap, poster) with `make media-artifacts`
-- [`docs/media/switchboard_poster.md`](docs/media/switchboard_poster.md) – speaker-ready poster with architecture callouts
-- [`docs/media/demo_instructions.md`](docs/media/demo_instructions.md) – automation guide for recordings and demos
-- [`docs/GROWTH_PLAYBOOK.md`](docs/GROWTH_PLAYBOOK.md) – social/shareable framing to pair with the visuals
+- **Regenerate everything** with `make media-artifacts` (hero video, GIF loops, screenshots, heatmap, poster)
+- **Hero walkthrough** – [PNG preview](docs/media/generated/hero.mp4) · [inline GIF](docs/media/generated/hero.gif)
+- **Approvals queue loop** – [docs/media/generated/approvals.gif](docs/media/generated/approvals.gif)
+- **Policy heatmap** – [PNG](docs/media/generated/policy_heatmap/policy_heatmap.png) · [SVG](docs/media/generated/policy_heatmap/policy_heatmap.svg)
+- **Screenshot pack** – curated stills in [`docs/media/screenshots/`](docs/media/screenshots)
+- **Architecture poster** – [PNG](docs/media/generated/poster/switchboard_poster.png) · [PDF](docs/media/generated/poster/switchboard_poster.pdf)
+- **How-to guide** – [`docs/media/demo_instructions.md`](docs/media/demo_instructions.md)
+- **Narrative framing** – [`docs/GROWTH_PLAYBOOK.md`](docs/GROWTH_PLAYBOOK.md)
 
 ## Testing & Quality Gates
 
