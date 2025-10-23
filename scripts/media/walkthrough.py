@@ -9,6 +9,7 @@ import json
 import os
 import sys
 import tempfile
+from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
@@ -18,12 +19,8 @@ import httpx
 from scripts.media.utils import ensure_dir, require_binary, wait_for_http
 
 try:
-    from playwright.async_api import (
-        BrowserContext,
-        Error as PlaywrightError,
-        Page,
-        async_playwright,
-    )
+    from playwright.async_api import BrowserContext, Page, async_playwright
+    from playwright.async_api import Error as PlaywrightError
 except ModuleNotFoundError as exc:  # pragma: no cover - surfaced immediately to caller
     raise SystemExit(
         "playwright is required. Install with `pip install switchboard[media] && playwright install`."
@@ -163,10 +160,8 @@ async def _pull_to_front(page: Page, approval_id: str) -> None:
                 await approve_button.first.scroll_into_view_if_needed()
                 return
             return
-        try:
+        with suppress(PlaywrightError):
             await refresh_button.click()
-        except PlaywrightError:
-            pass
         await page.wait_for_timeout(1_500)
 
     await _wait_for_selector(page, f"text=Approve {approval_id}", timeout=60)
