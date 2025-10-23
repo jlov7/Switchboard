@@ -22,4 +22,4 @@
 └──────────────────────────────────────────────┘
 ```
 
-Use this visual in presentations or docs to explain the flow at a glance.
+Use this visual in presentations or docs to explain the flow at a glance. The editable source lives in `docs/media/poster/switchboard_poster.excalidraw` and should be exported via `make poster`.

@@ -1,28 +1,30 @@
-PYTHON ?= python3
+PYTHON ?= python
 POETRY ?= poetry
 UV ?= uv
+VENV ?= .venv_media
+VENV_PYTHON = . $(VENV)/bin/activate && python
 
 .PHONY: install
 install:
-	$(PYTHON) -m venv .venv
-	. .venv/bin/activate && pip install --upgrade pip
-	. .venv/bin/activate && pip install -e .[dev]
+	$(PYTHON) -m venv $(VENV)
+	. $(VENV)/bin/activate && pip install --upgrade pip
+	. $(VENV)/bin/activate && pip install -e .[dev]
 
 .PHONY: install-extras
 install-extras:
-	$(PYTHON) -m venv .venv
-	. .venv/bin/activate && pip install --upgrade pip
-	. .venv/bin/activate && pip install -e .[dev,aws,gcp]
+	$(PYTHON) -m venv $(VENV)
+	. $(VENV)/bin/activate && pip install --upgrade pip
+	. $(VENV)/bin/activate && pip install -e .[dev,aws,gcp]
 
 .PHONY: lint
 lint:
-	. .venv/bin/activate && ruff check .
-	. .venv/bin/activate && black --check switchboard apps tests scripts evals
-	. .venv/bin/activate && mypy .
+	. $(VENV)/bin/activate && ruff check .
+	. $(VENV)/bin/activate && black --check switchboard apps tests scripts evals
+	. $(VENV)/bin/activate && mypy .
 
 .PHONY: test
 test:
-	. .venv/bin/activate && pytest
+	. $(VENV)/bin/activate && pytest
 
 .PHONY: test-container
 test-container:
@@ -30,11 +32,11 @@ test-container:
 
 .PHONY: coverage
 coverage:
-	. .venv/bin/activate && pytest --cov=switchboard --cov-report=term-missing
+	. $(VENV)/bin/activate && pytest --cov=switchboard --cov-report=term-missing
 
 .PHONY: mutation
 mutation:
-	. .venv/bin/activate && mutmut run
+	. $(VENV)/bin/activate && mutmut run
 
 .PHONY: qa
 qa: lint test
@@ -43,13 +45,51 @@ qa: lint test
 dev:
 	docker compose up --build
 
+.PHONY: dev-media
+dev-media:
+	SWITCHBOARD_APPROVAL_BACKEND=memory \
+	SWITCHBOARD_ENABLE_TELEMETRY=false \
+	SWITCHBOARD_API_URL=http://localhost:8000 \
+	SWITCHBOARD_APPROVALS_URL=http://localhost:8501 \
+	docker compose up --build -d
+	$(VENV_PYTHON) -m playwright install chromium
+	$(VENV_PYTHON) -m scripts.media.wait_for_services
+
+.PHONY: dev-media-down
+dev-media-down:
+	docker compose down
+
+.PHONY: media-hero
+media-hero:
+	$(VENV_PYTHON) scripts/media/walkthrough.py --video docs/media/generated/hero.mp4 --gif docs/media/generated/hero.gif
+
+.PHONY: media-approvals-gif
+media-approvals-gif:
+	$(VENV_PYTHON) scripts/media/walkthrough.py --scene approvals --video docs/media/generated/approvals.mp4 --gif docs/media/generated/approvals.gif
+
+.PHONY: media-screenshots
+media-screenshots:
+	$(VENV_PYTHON) scripts/media/screenshot_suite.py --output docs/media/screenshots
+
+.PHONY: policy-heatmap
+policy-heatmap:
+	$(VENV_PYTHON) scripts/media/policy_heatmap.py --output docs/media/generated/policy_heatmap
+
+.PHONY: poster
+poster:
+	$(VENV_PYTHON) scripts/media/export_poster.py
+
+.PHONY: media-artifacts
+media-artifacts:
+	$(VENV_PYTHON) scripts/media/build_all.py
+
 .PHONY: seed
 seed:
-	. .venv/bin/activate && $(PYTHON) scripts/seed_policies.py
+	$(VENV_PYTHON) scripts/seed_policies.py
 
 .PHONY: db-init
 db-init:
-	. .venv/bin/activate && $(PYTHON) scripts/init_db.py
+	$(VENV_PYTHON) scripts/init_db.py
 
 .PHONY: demo-e2e
 demo-e2e:
@@ -61,8 +101,8 @@ audit-verify:
 
 .PHONY: eval
 eval:
-	. .venv/bin/activate && python evals/runner.py
+	$(VENV_PYTHON) evals/runner.py
 
 .PHONY: tox
 tox:
-	. .venv/bin/activate && tox
+	. $(VENV)/bin/activate && tox
