@@ -7,7 +7,7 @@ import argparse
 import json
 import math
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -15,14 +15,17 @@ from scripts.media.utils import ensure_dir
 
 
 def _load_poster_spec(path: Path) -> dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("Poster specification must be a JSON object")
+    return cast(dict[str, Any], data)
 
 
-def _pick_font(font_size: int) -> ImageFont.FreeTypeFont:
+def _pick_font(font_size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     for candidate in ("Arial.ttf", "Helvetica.ttf", "DejaVuSans.ttf"):
         try:
             return ImageFont.truetype(candidate, font_size)
-        except (OSError, IOError):
+        except OSError:
             continue
     return ImageFont.load_default()
 
@@ -37,7 +40,7 @@ def _render_rectangle(draw: ImageDraw.ImageDraw, element: dict[str, Any]) -> Non
 
 
 def _render_text(draw: ImageDraw.ImageDraw, element: dict[str, Any]) -> None:
-    text = element.get("text") or element.get("originalText", "")
+    text = cast(str, element.get("text") or element.get("originalText") or "")
     font_size = int(element.get("fontSize", 24))
     font = _pick_font(font_size)
     color = element.get("strokeColor", "#000000")
@@ -61,28 +64,37 @@ def _render_elements(draw: ImageDraw.ImageDraw, elements: list[dict[str, Any]]) 
     for element in elements:
         if element.get("isDeleted"):
             continue
-        renderer = dispatch.get(element.get("type"))
+        element_type = element.get("type")
+        if not isinstance(element_type, str):
+            continue
+        renderer = dispatch.get(element_type)
         if renderer:
             renderer(draw, element)
 
 
 def export_poster(source: Path, output_dir: Path) -> None:
     spec = _load_poster_spec(source)
-    elements = spec.get("elements", [])
+    raw_elements = spec.get("elements", [])
+    if not isinstance(raw_elements, list):
+        raise ValueError("Poster specification elements should be a list")
+    elements = cast(list[dict[str, Any]], raw_elements)
 
     if not elements:
         raise RuntimeError("Poster specification has no drawable elements")
 
     ensure_dir(output_dir)
 
-    max_x = max(el["x"] + el.get("width", 0) for el in elements)
-    max_y = max(el["y"] + el.get("height", 0) for el in elements)
+    max_x = max(float(el.get("x", 0)) + float(el.get("width", 0)) for el in elements)
+    max_y = max(float(el.get("y", 0)) + float(el.get("height", 0)) for el in elements)
 
     margin = 40
     width = int(math.ceil(max_x + margin))
     height = int(math.ceil(max_y + margin))
 
-    background = spec.get("appState", {}).get("viewBackgroundColor", "#FFFFFF")
+    app_state = spec.get("appState", {})
+    if not isinstance(app_state, dict):
+        app_state = {}
+    background = cast(str, app_state.get("viewBackgroundColor", "#FFFFFF"))
     image = Image.new("RGB", (width, height), color=background)
     draw = ImageDraw.Draw(image)
 
@@ -119,4 +131,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
