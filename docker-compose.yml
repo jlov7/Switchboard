@@ -5,10 +5,10 @@ services:
     build:
       context: .
       dockerfile: infra/docker/Dockerfile.api
-    env_file:
-      - .env.example
     environment:
       - APP_ENV=docker
+      - OPA_URL=http://opa:8181
+      - SWITCHBOARD_USE_OPA=true
     ports:
       - "8000:8000"
     depends_on:
@@ -22,8 +22,9 @@ services:
     build:
       context: .
       dockerfile: infra/docker/Dockerfile.demo_agent
-    env_file:
-      - .env.example
+    environment:
+      - SWITCHBOARD_API_URL=http://api:8000
+      - SWITCHBOARD_APPROVALS_URL=http://approvals-ui:8501
     depends_on:
       - api
     volumes:
@@ -33,8 +34,8 @@ services:
     build:
       context: .
       dockerfile: infra/docker/Dockerfile.mcp
-    env_file:
-      - .env.example
+    environment:
+      - SWITCHBOARD_API_URL=http://api:8000
     ports:
       - "8081:8081"
     volumes:
@@ -44,8 +45,8 @@ services:
     build:
       context: .
       dockerfile: infra/docker/Dockerfile.approvals_ui
-    env_file:
-      - .env.example
+    environment:
+      - SWITCHBOARD_API_URL=http://api:8000
     ports:
       - "8501:8501"
     depends_on:
@@ -63,7 +64,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   opa:
-    image: openpolicyagent/opa:latest
+    image: openpolicyagent/opa:0.63.0
     command:
       - "run"
       - "--server"

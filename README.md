@@ -128,8 +128,9 @@ Endpoints & consoles:
 
 ## Media & Storytelling Assets
 
+- Regenerate the full media kit (hero video, GIF loops, screenshots, heatmap, poster) with `make media-artifacts`
 - [`docs/media/switchboard_poster.md`](docs/media/switchboard_poster.md) – speaker-ready poster with architecture callouts
-- [`docs/media/demo_instructions.md`](docs/media/demo_instructions.md) – narrated walkthrough script for live demos or recordings
+- [`docs/media/demo_instructions.md`](docs/media/demo_instructions.md) – automation guide for recordings and demos
 - [`docs/GROWTH_PLAYBOOK.md`](docs/GROWTH_PLAYBOOK.md) – social/shareable framing to pair with the visuals
 
 ## Testing & Quality Gates

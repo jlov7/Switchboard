@@ -4,7 +4,7 @@ rate_limits:
     limit: 10
   p0:
     window_seconds: 300
-    limit: 1
+    limit: 5
 
 sensitivity:
   requires_approval_tags:

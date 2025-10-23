@@ -1,8 +1,32 @@
-# Demo Recording Instructions
+# Media Automation Guide
 
-1. Start services: `make dev`
-1. Record terminal session: `asciinema rec demos/switchboard.cast --command "make demo-e2e"`
-1. Convert to GIF (requires `agg`): `agg demos/switchboard.cast demos/switchboard.gif`
-1. Embed GIF in README or presentations.
+The media kit can be regenerated end-to-end for demos, docs, and social previews.
 
-Tip: narrate the approvals UI step separately using a short screen recording.
+## Quick Start
+
+```bash
+make install
+make dev-media
+make media-hero
+make media-approvals-gif
+make media-screenshots
+make policy-heatmap
+make poster
+make dev-media-down
+```
+
+Generated assets land in `docs/media/generated/` and `docs/media/screenshots/`.
+
+## One-Shot Pipeline
+
+```bash
+make media-artifacts
+```
+
+This target orchestrates service startup, captures Playwright walkthroughs, generates screenshots, renders the policy heatmap, and exports the architecture poster.
+
+### Troubleshooting
+
+- Ensure `ffmpeg` and `npx` are installed on your system.
+- To debug Playwright flows visually, add `--no-headless` to the script commands (e.g., `python scripts/media/walkthrough.py --no-headless --video ...`).
+- `make dev-media` starts Docker services in the background; run `make dev-media-down` to stop them when finished.

@@ -1,0 +1,46 @@
+name: Media Artifacts
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,media]"
+          playwright install chromium
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg nodejs npm
+          npm install -g @excalidraw/excalidraw-cli
+
+      - name: Generate media artifacts
+        env:
+          SWITCHBOARD_APPROVAL_BACKEND: memory
+          SWITCHBOARD_ENABLE_TELEMETRY: "false"
+        run: |
+          make media-artifacts
+
+      - name: Upload media outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: switchboard-media
+          path: |
+            docs/media/generated
+            docs/media/screenshots
+
