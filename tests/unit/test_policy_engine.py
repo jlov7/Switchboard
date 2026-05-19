@@ -78,9 +78,7 @@ async def test_policy_engine_rate_limits_p0() -> None:
 @pytest.mark.asyncio
 async def test_policy_engine_blocks_self_approval() -> None:
     engine = PolicyEngine()
-    decision = await engine.evaluate(
-        build_request(metadata={"role": "ops", "approver": "user"})
-    )
+    decision = await engine.evaluate(build_request(metadata={"role": "ops", "approver": "user"}))
     assert decision.allowed is False
     assert "policy:segregation-of-duties" in decision.policy_ids
     assert decision.reason == "Segregation of duties: requester cannot approve"

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import pytest
 
-from switchboard.audit.rekor_client import RekorError
+from switchboard.audit.rekor_client import RekorClient, RekorError
 from switchboard.audit.service import AuditService
 from switchboard.core.models import (
     ActionArguments,
@@ -33,14 +34,14 @@ def build_audit_record() -> AuditRecord:
     return AuditRecord(request=request, policy_decision=policy)
 
 
-class _StubRekorClient:
+class _StubRekorClient(RekorClient):
     def __init__(self, verify_result: bool = True, raise_error: bool = False) -> None:
-        self.logged_payloads: list[dict] = []
+        self.logged_payloads: list[dict[str, Any]] = []
         self.verified_entries: list[str] = []
         self.verify_result = verify_result
         self.raise_error = raise_error
 
-    async def log_entry(self, payload: dict) -> str:
+    async def log_entry(self, payload: dict[str, Any]) -> str:
         self.logged_payloads.append(payload)
         return "entry-123"
 

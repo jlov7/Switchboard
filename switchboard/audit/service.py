@@ -22,9 +22,7 @@ class AuditVerificationResult:
             return False
         if not self.signature_valid:
             return False
-        if self.rekor_included is False:
-            return False
-        return True
+        return self.rekor_included is not False
 
 
 class AuditService:

@@ -1,20 +1,20 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field, field_validator
 
 
-class ActionSeverity(str, Enum):
+class ActionSeverity(StrEnum):
     P0 = "p0"
     P1 = "p1"
     P2 = "p2"
 
 
-class ApprovalStatus(str, Enum):
+class ApprovalStatus(StrEnum):
     PENDING = "pending"
     APPROVED = "approved"
     DENIED = "denied"

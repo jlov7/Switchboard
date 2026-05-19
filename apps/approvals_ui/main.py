@@ -96,19 +96,17 @@ else:
             st.markdown(f"**Policy decision**: `{reason}`")
             st.markdown(f"**Risk level**: :{risk_color}[{str(risk_level).upper()}]")
             if policy_ids:
-                st.markdown(
-                    "**Policy IDs**: "
-                    + ", ".join(f"`{pid}`" for pid in policy_ids)
-                )
+                st.markdown("**Policy IDs**: " + ", ".join(f"`{pid}`" for pid in policy_ids))
             st.json(item["request"], expanded=False)
             if audit.get("event_id"):
                 verify_cmd = f"./scripts/verify_audit.sh {audit['event_id']}"
                 st.markdown("**Verify audit signature:**")
                 st.code(verify_cmd, language="bash")
-                if audit.get("verification_url") and audit["verification_url"] not in {None, "offline"}:
-                    st.markdown(
-                        f"Verification reference: `{audit['verification_url']}`"
-                    )
+                if audit.get("verification_url") and audit["verification_url"] not in {
+                    None,
+                    "offline",
+                }:
+                    st.markdown(f"Verification reference: `{audit['verification_url']}`")
                 if st.button(
                     f"Run live verification {audit['event_id']}",
                     key=f"verify-{approval_id}",

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from uuid import uuid4
-
 from switchboard.audit.receipt import build_receipt, receipt_to_json
 from switchboard.audit.service import AuditVerificationResult
 from switchboard.core.models import (
@@ -44,7 +42,9 @@ def test_build_receipt_includes_defaults() -> None:
 
 def test_build_receipt_can_drop_reference() -> None:
     record = _record()
-    result = AuditVerificationResult(signature_valid=False, rekor_included=False, failure_reason="bad")
+    result = AuditVerificationResult(
+        signature_valid=False, rekor_included=False, failure_reason="bad"
+    )
     receipt = build_receipt(record, result, include_rekor_reference=False)
     assert "verification_reference" not in receipt
     assert receipt["verified"] is False

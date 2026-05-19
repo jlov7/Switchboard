@@ -11,28 +11,21 @@ from typing import TypedDict
 from scripts.media.utils import ensure_dir, wait_for_http
 
 try:
-    from playwright.async_api import Playwright, async_playwright
+    from playwright.async_api import FloatRect, Playwright, ViewportSize, async_playwright
 except ModuleNotFoundError as exc:  # pragma: no cover - to surface quickly for CLI users
     raise SystemExit(
         "playwright is required. Install with `pip install switchboard[media] && playwright install`."
     ) from exc
 
 
-DEFAULT_VIEWPORT = {"width": 1440, "height": 900}
-
-
-class Clip(TypedDict, total=False):
-    x: float
-    y: float
-    width: float
-    height: float
+DEFAULT_VIEWPORT: ViewportSize = {"width": 1440, "height": 900}
 
 
 class Scene(TypedDict):
     name: str
     url: str
     selector: str
-    clip: Clip | None
+    clip: FloatRect | None
 
 
 SCENES: tuple[Scene, ...] = (
@@ -71,7 +64,7 @@ async def capture_scene(
     await page.goto(scene["url"], wait_until="networkidle")
     await page.wait_for_selector(scene["selector"])
     clip = scene.get("clip")
-    clip_box: Clip | None = None
+    clip_box: FloatRect | None = None
     if clip is not None:
         clip_box = {
             "x": float(clip.get("x", 0.0)),
